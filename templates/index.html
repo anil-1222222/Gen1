@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Groq LangChain Live Stream</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(19, 27, 46, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.35);
+            --accent: #06b6d4;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --code-bg: #1e293b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.12) 0%, transparent 40%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .badge-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(99, 102, 241, 0.12);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 0.4rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #a5b4fc;
+            margin-bottom: 1rem;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 1.25rem;
+            padding: 1.75rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 0.75rem;
+            position: relative;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 0.75rem;
+            padding: 1rem 1.25rem;
+            font-size: 1rem;
+            color: var(--text-main);
+            outline: none;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        button.btn-send {
+            background: linear-gradient(135deg, var(--primary) 0%, #4f46e5 100%);
+            color: white;
+            border: none;
+            border-radius: 0.75rem;
+            padding: 1rem 1.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 15px var(--primary-glow);
+        }
+
+        button.btn-send:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+        }
+
+        button.btn-send:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .chip {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 9999px;
+            padding: 0.35rem 0.85rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .chip:hover {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: rgba(99, 102, 241, 0.3);
+            color: #c7d2fe;
+        }
+
+        .response-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .response-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-tag {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 0.375rem;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-muted);
+        }
+
+        .output-box {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            min-height: 160px;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: #e2e8f0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 1.2em;
+            background: var(--accent);
+            vertical-align: middle;
+            margin-left: 2px;
+            animation: blink 0.8s infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="badge-container">
+                <div class="pulse-dot"></div>
+                LangChain + Groq (llama-3.3-70b-versatile)
+            </div>
+            <h1>Live AI Token Streaming</h1>
+            <p class="subtitle">Fast real-time responses powered by Groq & LangChain</p>
+        </header>
+
+        <div class="card">
+            <form id="prompt-form" onsubmit="event.preventDefault(); startStream();">
+                <div class="input-group">
+                    <input type="text" id="prompt-input" value="what is java in 30 words" placeholder="Ask anything..." required>
+                    <button type="submit" id="send-btn" class="btn-send">
+                        <span>Send</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </button>
+                </div>
+            </form>
+            
+            <div class="chips">
+                <div class="chip" onclick="setPrompt('what is java in 30 words')">What is Java in 30 words?</div>
+                <div class="chip" onclick="setPrompt('Explain Object Oriented Programming simply')">Explain OOP</div>
+                <div class="chip" onclick="setPrompt('What is LangChain init_chat_model?')">LangChain init_chat_model</div>
+                <div class="chip" onclick="setPrompt('Write a quick Python hello world script')">Python Hello World</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="response-header">
+                <div class="response-title">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    Stream Output
+                </div>
+                <span id="status-tag" class="status-tag">Ready</span>
+            </div>
+            <div id="output-box" class="output-box">Click "Send" to generate response...</div>
+        </div>
+
+        <footer>
+            Powered by LangChain & Groq LLM Inference API
+        </footer>
+    </div>
+
+    <script>
+        function setPrompt(text) {
+            document.getElementById('prompt-input').value = text;
+            startStream();
+        }
+
+        let eventSource = null;
+
+        function startStream() {
+            const promptInput = document.getElementById('prompt-input');
+            const outputBox = document.getElementById('output-box');
+            const statusTag = document.getElementById('status-tag');
+            const sendBtn = document.getElementById('send-btn');
+            
+            const prompt = promptInput.value.trim();
+            if (!prompt) return;
+
+            if (eventSource) {
+                eventSource.close();
+            }
+
+            outputBox.innerHTML = '';
+            statusTag.textContent = 'Streaming...';
+            statusTag.style.color = '#06b6d4';
+            sendBtn.disabled = true;
+
+            const cursor = document.createElement('span');
+            cursor.className = 'cursor';
+            outputBox.appendChild(cursor);
+
+            eventSource = new EventSource('/stream?prompt=' + encodeURIComponent(prompt));
+
+            eventSource.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                
+                if (data.error) {
+                    outputBox.innerHTML = `<span style="color: #ef4444;">Error: ${data.error}</span>`;
+                    statusTag.textContent = 'Error';
+                    statusTag.style.color = '#ef4444';
+                    sendBtn.disabled = false;
+                    eventSource.close();
+                    return;
+                }
+
+                if (data.done) {
+                    statusTag.textContent = 'Completed';
+                    statusTag.style.color = '#10b981';
+                    sendBtn.disabled = false;
+                    if (cursor.parentNode) {
+                        cursor.parentNode.removeChild(cursor);
+                    }
+                    eventSource.close();
+                    return;
+                }
+
+                if (data.content) {
+                    const textNode = document.createTextNode(data.content);
+                    outputBox.insertBefore(textNode, cursor);
+                }
+            };
+
+            eventSource.onerror = function(err) {
+                console.error("SSE Error:", err);
+                statusTag.textContent = 'Disconnected';
+                statusTag.style.color = '#ef4444';
+                sendBtn.disabled = false;
+                if (cursor.parentNode) {
+                    cursor.parentNode.removeChild(cursor);
+                }
+                eventSource.close();
+            };
+        }
+    </script>
+</body>
+</html>
