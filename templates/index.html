@@ -620,7 +620,7 @@
             <div id="output-box" class="code-box" style="height: 180px; font-family:'Outfit', sans-serif; font-size:1.05rem;">Click the Microphone or type a prompt to start...</div>
         </div>
 
-        <!-- Mode 2 View: v0 Lite Split Sandbox -->
+        <!-- Mode 2 View: UI Builder Split Sandbox -->
         <div id="v0-view" class="v0-split-grid" style="display: none;">
             <div class="card">
                 <div class="panel-header">
@@ -629,6 +629,7 @@
                         Generated Code
                     </div>
                     <div class="panel-actions">
+                        <button class="action-btn btn-run" onclick="updateSandbox()">▶️ Run</button>
                         <button class="action-btn" onclick="copyCode()">Copy</button>
                         <button class="action-btn" onclick="exportHtml()">Export</button>
                     </div>
@@ -797,6 +798,40 @@
             document.getElementById('dash-badge').textContent = stats.solved >= 3 ? "🏆 Master" : "⭐ Novice";
         }
         updateStatsUI();
+
+        // Live Sandbox Render Engine
+        function updateSandbox() {
+            const iframe = document.getElementById('sandbox-iframe');
+            const codeBox = document.getElementById('v0-code-box');
+            if (!iframe || !codeBox) return;
+
+            let rawCode = codeBox.innerText || codeBox.textContent;
+            let cleanCode = rawCode.replace(/```html/gi, '').replace(/```css/gi, '').replace(/```js/gi, '').replace(/```/g, '').trim();
+
+            iframe.srcdoc = cleanCode;
+        }
+
+        function copyCode() {
+            const codeBox = document.getElementById('v0-code-box');
+            let rawCode = codeBox.innerText || codeBox.textContent;
+            let cleanCode = rawCode.replace(/```html/gi, '').replace(/```css/gi, '').replace(/```js/gi, '').replace(/```/g, '').trim();
+            
+            navigator.clipboard.writeText(cleanCode).then(() => {
+                alert("Component code copied to clipboard!");
+            });
+        }
+
+        function exportHtml() {
+            const codeBox = document.getElementById('v0-code-box');
+            let rawCode = codeBox.innerText || codeBox.textContent;
+            let cleanCode = rawCode.replace(/```html/gi, '').replace(/```css/gi, '').replace(/```js/gi, '').replace(/```/g, '').trim();
+            
+            const blob = new Blob([cleanCode], { type: 'text/html' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'ui-component.html';
+            a.click();
+        }
 
         // Speaker ON/OFF Toggle
         function toggleSpeaker() {
@@ -1182,6 +1217,8 @@ Begin Evaluation:`;
                     if (currentMode === 'voice' && sentenceBuffer.trim().length > 0) {
                         speakSentence(sentenceBuffer);
                         sentenceBuffer = "";
+                    } else if (currentMode === 'v0') {
+                        updateSandbox();
                     }
                     eventSource.close();
                     return;
@@ -1196,6 +1233,8 @@ Begin Evaluation:`;
                             speakSentence(sentenceBuffer);
                             sentenceBuffer = "";
                         }
+                    } else if (currentMode === 'v0') {
+                        updateSandbox();
                     }
                 }
             };
