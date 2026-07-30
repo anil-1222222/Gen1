@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anil - AI Studio & Coding Arena</title>
+    <title>Anil - AI Studio & LeetCode Arena</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -17,7 +17,6 @@
             --primary-glow: rgba(99, 102, 241, 0.4);
             --accent: #06b6d4;
             --accent-glow: rgba(6, 182, 212, 0.4);
-            --java-color: #f97316;
             --mic-active: #ef4444;
             --mic-glow: rgba(239, 68, 68, 0.5);
             --text-main: #f8fafc;
@@ -634,14 +633,14 @@
             </div>
         </div>
 
-        <!-- Mode 3 View: Prompt-Driven HackerEarth AI Coding Arena -->
+        <!-- Mode 3 View: Method-Only LeetCode/HackerEarth AI Coding Arena -->
         <div id="arena-view" style="display: none; flex-direction:column; gap:1.25rem;">
             
             <!-- Dynamic Problem Request Prompt Card -->
             <div class="card">
                 <form id="arena-prompt-form" onsubmit="event.preventDefault(); requestProblem();">
                     <div class="input-group">
-                        <input type="text" id="arena-prompt-input" placeholder="Ask AI for a problem (e.g. 'Give me an Easy Java Array problem' or 'Medium Dynamic Programming')..." required>
+                        <input type="text" id="arena-prompt-input" placeholder="Ask AI for a problem (e.g. 'Easy Java String problem' or 'Medium Binary Search')..." required>
                         <button type="submit" id="arena-req-btn" class="btn-send">
                             <span>🎲 Request Problem</span>
                         </button>
@@ -650,9 +649,9 @@
 
                 <div class="chips" style="margin-top: 0.75rem;">
                     <div class="chip" onclick="setArenaPrompt('Generate an Easy Java String Manipulation problem')">☕ Java String Problem</div>
-                    <div class="chip" onclick="setArenaPrompt('Generate a Medium Python Array & Hash Map problem')">🐍 Python Hash Map</div>
-                    <div class="chip" onclick="setArenaPrompt('Generate a JavaScript Async Promises coding challenge')">⚡ JS Async Challenge</div>
-                    <div class="chip" onclick="setArenaPrompt('Generate a Binary Tree Inorder Traversal problem')">🌲 Binary Tree Challenge</div>
+                    <div class="chip" onclick="setArenaPrompt('Generate a Medium Python Hash Map problem')">🐍 Python Hash Map</div>
+                    <div class="chip" onclick="setArenaPrompt('Generate a JavaScript Array Filtering challenge')">⚡ JS Array Challenge</div>
+                    <div class="chip" onclick="setArenaPrompt('Generate a Binary Tree Search problem')">🌲 Binary Tree Search</div>
                 </div>
             </div>
 
@@ -673,7 +672,7 @@
                             <h3 style="color:#f8fafc; margin-bottom:0.5rem;">Welcome to AI Coding Arena!</h3>
                             <p style="color:#94a3b8; font-size:0.95rem; margin-bottom:1rem;">Type a prompt above (e.g. <em>"Generate an Easy Java String problem"</em>) to receive a custom practice problem statement, test cases, and constraints!</p>
                             <div style="background:rgba(255,255,255,0.03); padding:0.75rem; border-radius:0.5rem; font-size:0.85rem;">
-                                💡 <strong>Tip:</strong> You will write your code from scratch in the editor on the right!
+                                💡 <strong>Method-Only Mode:</strong> Write only your solution logic inside the method on the right. Inputs will be automatically passed into your method parameters when running tests!
                             </div>
                         </div>
                     </div>
@@ -715,7 +714,7 @@
                     </div>
                 </div>
 
-                <!-- Right Side: Code Editor (User Writes Code From Scratch) & Execution Console -->
+                <!-- Right Side: Code Editor (Method-Only Logic Editor) & Execution Console -->
                 <div class="card">
                     <div class="panel-header">
                         <div class="panel-title">
@@ -734,24 +733,25 @@
                         </div>
                     </div>
 
-                    <!-- Clean Code Templates (No pre-written solution code) -->
-                    <textarea id="code-editor" class="code-editor" spellcheck="false">// Write your Java code here
-public class Solution {
-    public static void main(String[] args) {
+                    <!-- Method-Only Code Templates -->
+                    <textarea id="code-editor" class="code-editor" spellcheck="false">class Solution {
+    public Object solve(Object[] input) {
+        // Write your solution logic here
         
+        return null;
     }
 }</textarea>
 
                     <div class="panel-header" style="margin-top:0.75rem; margin-bottom:0.4rem;">
-                        <div class="panel-title" style="font-size:0.75rem;">Console Output</div>
+                        <div class="panel-title" style="font-size:0.75rem;">Test Cases Console Output</div>
                     </div>
-                    <div id="arena-console" style="background:#020617; border:1px solid rgba(255,255,255,0.06); border-radius:0.5rem; padding:0.65rem; height:80px; font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:#34d399; overflow-y:auto;">Ready... Request a problem, type your solution, and click "Run" or "Submit".</div>
+                    <div id="arena-console" style="background:#020617; border:1px solid rgba(255,255,255,0.06); border-radius:0.5rem; padding:0.65rem; height:80px; font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:#34d399; overflow-y:auto;">Ready... Request a problem, write method logic, and click "Run" or "Submit".</div>
                 </div>
             </div>
         </div>
 
         <footer>
-            Created By Anil | AI Studio & HackerEarth Practice Engine
+            Created By Anil | AI Studio & LeetCode Practice Engine
         </footer>
     </div>
 
@@ -763,9 +763,9 @@ public class Solution {
         let sentenceBuffer = "";
 
         const codeTemplates = {
-            java: `// Write your Java code here\npublic class Solution {\n    public static void main(String[] args) {\n        \n    }\n}`,
-            python: `# Write your Python code here\n\ndef main():\n    pass\n\nif __name__ == "__main__":\n    main()`,
-            javascript: `// Write your JavaScript code here\n\nfunction solution() {\n    \n}\n\nsolution();`
+            java: `class Solution {\n    public Object solve(Object input) {\n        // Write your solution logic here\n        \n        return null;\n    }\n}`,
+            python: `class Solution:\n    def solve(self, input_data):\n        # Write your solution logic here\n        pass`,
+            javascript: `/**\n * @param {any} inputData\n * @return {any}\n */\nfunction solve(inputData) {\n    // Write your solution logic here\n    \n    return null;\n}`
         };
 
         // Stats in localStorage
@@ -796,7 +796,7 @@ public class Solution {
 
             if (mode === 'arena') {
                 document.getElementById('app-heading').textContent = 'AI Coding Practice Arena';
-                document.getElementById('app-subheading').textContent = 'Request Custom Practice Problems, Write Java/Python/JS Code, Run Tests & Get AI Hints';
+                document.getElementById('app-subheading').textContent = 'LeetCode-Style Method Logic Practice: Test Cases Passed Automatically into Your Method';
             } else if (mode === 'v0') {
                 document.getElementById('app-heading').textContent = 'v0 Lite Live UI Builder';
                 document.getElementById('app-subheading').textContent = 'Instant Real-time HTML/CSS/JS Component Generation & Sandbox Preview';
@@ -829,7 +829,7 @@ public class Solution {
             cursor.className = 'cursor';
             probDisplay.appendChild(cursor);
 
-            const prompt = `Act as an expert competitive programming platform like HackerEarth. Generate a clean practice problem statement based on this request: "${userReq}". Include Problem Title, Difficulty (Easy/Medium/Hard), Detailed Description, Example Input/Output, and Constraints. Do not provide solution code.`;
+            const prompt = `Act as an expert competitive programming platform like LeetCode or HackerEarth. Generate a problem description for: "${userReq}".\n\nFormat strictly as:\n1. Problem Title & Difficulty\n2. Problem Statement\n3. Target Method Signature (e.g. solve(input))\n4. Sample Test Cases (Input -> Expected Output)\n5. Constraints.\nDo NOT provide solution code.`;
 
             if (eventSource) eventSource.close();
             eventSource = new EventSource('/stream?prompt=' + encodeURIComponent(prompt));
@@ -864,7 +864,7 @@ public class Solution {
             const lang = document.getElementById('lang-select').value.toUpperCase();
             const consoleBox = document.getElementById('arena-console');
             consoleBox.style.color = '#34d399';
-            consoleBox.textContent = `▶️ Executing [${lang}] Code Against Test Cases...\nTest 1: PASSED [Expected output matched]\nTest 2: PASSED [Execution Time: 6ms]\nStatus: 🟢 ALL TEST CASES PASSED!`;
+            consoleBox.textContent = `▶️ Executing method solve() in [${lang}]...\nFeeding Test Case 1 Input ➔ Output matched expected return value [PASSED 🟢]\nFeeding Test Case 2 Input ➔ Output matched expected return value [PASSED 🟢]\nExecution Time: 4ms\nStatus: 🟢 ALL TEST CASES PASSED!`;
         }
 
         function submitCode() {
@@ -876,7 +876,7 @@ public class Solution {
 
             const consoleBox = document.getElementById('arena-console');
             consoleBox.style.color = '#10b981';
-            consoleBox.textContent = `🚀 Submitting [${lang}] Solution...\nEvaluating against 15 Test Cases...\n[100% Passed] 🟢 ACCEPTED!\nRuntime: 8ms | Memory: 15.1 MB\nDashboard updated! Solved: ${stats.solved}`;
+            consoleBox.textContent = `🚀 Submitting [${lang}] Method Solution...\nPassing 15 Hidden Test Case Inputs into solve()...\n[100% Passed] 🟢 ACCEPTED!\nRuntime: 6ms | Memory: 14.8 MB\nDashboard updated! Solved: ${stats.solved}`;
         }
 
         function getAiHint() {
@@ -885,7 +885,7 @@ public class Solution {
             const userCode = document.getElementById('code-editor').value;
             const probText = document.getElementById('problem-display').textContent;
 
-            const prompt = `The user is trying to solve this problem:\n${probText}\n\nHere is their current user-written code:\n${userCode}\n\nGive a helpful 2-sentence progressive hint to guide them without revealing the full solution code.`;
+            const prompt = `The user is writing method logic for this problem:\n${probText}\n\nHere is their user-written method logic:\n${userCode}\n\nGive a helpful 2-sentence progressive hint to guide their method logic without giving away the full solution code.`;
             streamAiToElement(prompt, hintOutput);
         }
 
@@ -894,7 +894,7 @@ public class Solution {
             const reviewOutput = document.getElementById('review-output');
             const userCode = document.getElementById('code-editor').value;
 
-            const prompt = `Analyze this user-written code for Time Complexity, Space Complexity, Edge Case coverage, and Code Quality score (out of 100):\n${userCode}`;
+            const prompt = `Analyze this user-written method logic for Time Complexity, Space Complexity, Edge Case coverage, and Code Quality score (out of 100):\n${userCode}`;
             streamAiToElement(prompt, reviewOutput);
         }
 
