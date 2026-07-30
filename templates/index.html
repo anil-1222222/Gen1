@@ -672,7 +672,7 @@
                             <h3 style="color:#f8fafc; margin-bottom:0.5rem;">Welcome to AI Coding Arena!</h3>
                             <p style="color:#94a3b8; font-size:0.95rem; margin-bottom:1rem;">Type a prompt above (e.g. <em>"Generate an Easy Java String problem"</em>) to receive a custom practice problem statement, test cases, and constraints!</p>
                             <div style="background:rgba(255,255,255,0.03); padding:0.75rem; border-radius:0.5rem; font-size:0.85rem;">
-                                💡 <strong>Method-Only Mode:</strong> Write your solution logic inside the method on the right using concrete, strongly-typed data types (e.g. <code>int[]</code>, <code>String</code>, <code>boolean</code>).
+                                💡 <strong>Method-Only Mode:</strong> Write your solution logic inside the method on the right using Object types. AI strictly compiles and tests your code!
                             </div>
                         </div>
                     </div>
@@ -733,12 +733,12 @@
                         </div>
                     </div>
 
-                    <!-- Method-Only Concrete Strongly-Typed Templates -->
+                    <!-- Method-Only Templates (Object Only) -->
                     <textarea id="code-editor" class="code-editor" spellcheck="false">class Solution {
-    public int[] solve(int[] nums, int target) {
+    public Object solve(Object input) {
         // Write your solution logic here
         
-        return new int[]{};
+        return null;
     }
 }</textarea>
 
@@ -763,9 +763,9 @@
         let sentenceBuffer = "";
 
         const codeTemplates = {
-            java: `class Solution {\n    public int[] solve(int[] nums, int target) {\n        // Write your solution logic here\n        \n        return new int[]{};\n    }\n}`,
-            python: `class Solution:\n    def solve(self, nums: List[int], target: int) -> List[int]:\n        # Write your solution logic here\n        pass`,
-            javascript: `/**\n * @param {number[]} nums\n * @param {number} target\n * @return {number[]}\n */\nfunction solve(nums, target) {\n    // Write your solution logic here\n    \n    return [];\n}`
+            java: `class Solution {\n    public Object solve(Object input) {\n        // Write your solution logic here\n        \n        return null;\n    }\n}`,
+            python: `class Solution:\n    def solve(self, input_data):\n        # Write your solution logic here\n        pass`,
+            javascript: `/**\n * @param {any} inputData\n * @return {any}\n */\nfunction solve(inputData) {\n    // Write your solution logic here\n    \n    return null;\n}`
         };
 
         // Stats in localStorage
@@ -829,7 +829,7 @@
             cursor.className = 'cursor';
             probDisplay.appendChild(cursor);
 
-            const prompt = `Act as an expert competitive programming platform like LeetCode or HackerEarth. Generate a problem description for: "${userReq}".\n\nFormat strictly as:\n1. Problem Title & Difficulty\n2. Problem Statement\n3. Target Method Signature with concrete strongly-typed data types (e.g. public int[] solve(int[] nums, int target) for Java - DO NOT USE generic Object)\n4. Sample Test Cases (Input -> Expected Output)\n5. Constraints.\nDo NOT provide solution code.`;
+            const prompt = `Act as an expert competitive programming platform like LeetCode or HackerEarth. Generate a problem description for: "${userReq}".\n\nFormat strictly as:\n1. Problem Title & Difficulty\n2. Problem Statement\n3. Target Method Signature using Object type (e.g. public Object solve(Object input) for Java)\n4. Sample Test Cases (Input -> Expected Output)\n5. Constraints.\nDo NOT provide solution code.`;
 
             if (eventSource) eventSource.close();
             eventSource = new EventSource('/stream?prompt=' + encodeURIComponent(prompt));
@@ -898,7 +898,7 @@ ${problemText}
 ${userCode}
 
 Strict Evaluation Rules:
-1. Check if user code is unmodified template code (e.g. return null; or return new int[]{}; or pass or empty body). If so, FAIL with "🔴 COMPILATION / LOGIC ERROR: No logic written in method".
+1. Check if user code is unmodified template code (e.g. return null; or pass or empty body). If so, FAIL with "🔴 COMPILATION / LOGIC ERROR: No logic written in method".
 2. Check for syntax and compilation errors in ${lang} (e.g., missing semicolons in Java, invalid syntax, type mismatches). If syntax is wrong, output detailed line compiler error.
 3. Test code against 3-5 test cases. If any test case fails, output "🔴 WRONG ANSWER on Test Case X (Input: ..., Output: ..., Expected: ...)".
 4. If and only if the code has zero syntax errors and passes all test cases, output "🟢 ACCEPTED! All Test Cases Passed." and end with the line "[STATUS: ACCEPTED]".
