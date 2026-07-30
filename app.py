@@ -16,6 +16,7 @@ def index():
 @app.route("/stream")
 def stream_response():
     prompt = request.args.get("prompt", "what is java in 30 words")
+    print(prompt)
     
     def generate():
         try:
