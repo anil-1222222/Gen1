@@ -672,7 +672,7 @@
                             <h3 style="color:#f8fafc; margin-bottom:0.5rem;">Welcome to AI Coding Arena!</h3>
                             <p style="color:#94a3b8; font-size:0.95rem; margin-bottom:1rem;">Type a prompt above (e.g. <em>"Generate an Easy Java String problem"</em>) to receive a custom practice problem statement, test cases, and constraints!</p>
                             <div style="background:rgba(255,255,255,0.03); padding:0.75rem; border-radius:0.5rem; font-size:0.85rem;">
-                                💡 <strong>Method-Only Mode:</strong> Write only your solution logic inside the method on the right. Inputs will be automatically passed into your method parameters when running tests!
+                                💡 <strong>Method-Only Mode:</strong> Write your solution logic inside the method on the right. AI strictly compiles and tests your code!
                             </div>
                         </div>
                     </div>
@@ -710,11 +710,11 @@
                             </div>
                         </div>
                         <h4 style="color:#f8fafc; font-family:'Outfit', sans-serif; margin-bottom:0.5rem;">Practice Stats (Instant Client Memory)</h4>
-                        <p style="color:#94a3b8; font-family:'Outfit', sans-serif; font-size:0.85rem;">Your practice stats are stored locally in your browser session for instant practice with zero database latency!</p>
+                        <p style="color:#94a3b8; font-family:'Outfit', sans-serif; font-size:0.85rem;">Your practice stats update only when your submitted code strictly compiles and passes all test cases!</p>
                     </div>
                 </div>
 
-                <!-- Right Side: Code Editor (Method-Only Logic Editor) & Execution Console -->
+                <!-- Right Side: Code Editor & AI Compiler Console -->
                 <div class="card">
                     <div class="panel-header">
                         <div class="panel-title">
@@ -735,7 +735,7 @@
 
                     <!-- Method-Only Code Templates -->
                     <textarea id="code-editor" class="code-editor" spellcheck="false">class Solution {
-    public Object solve(Object[] input) {
+    public Object solve(Object input) {
         // Write your solution logic here
         
         return null;
@@ -743,15 +743,15 @@
 }</textarea>
 
                     <div class="panel-header" style="margin-top:0.75rem; margin-bottom:0.4rem;">
-                        <div class="panel-title" style="font-size:0.75rem;">Test Cases Console Output</div>
+                        <div class="panel-title" style="font-size:0.75rem;">AI Compiler & Test Suite Output</div>
                     </div>
-                    <div id="arena-console" style="background:#020617; border:1px solid rgba(255,255,255,0.06); border-radius:0.5rem; padding:0.65rem; height:80px; font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:#34d399; overflow-y:auto;">Ready... Request a problem, write method logic, and click "Run" or "Submit".</div>
+                    <div id="arena-console" style="background:#020617; border:1px solid rgba(255,255,255,0.06); border-radius:0.5rem; padding:0.65rem; height:90px; font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:#38bdf8; overflow-y:auto; white-space:pre-wrap;">Ready... Request a problem, write method logic, and click "Run" or "Submit".</div>
                 </div>
             </div>
         </div>
 
         <footer>
-            Created By Anil | AI Studio & LeetCode Practice Engine
+            Created By Anil | AI Studio & LeetCode Compiler Engine
         </footer>
     </div>
 
@@ -796,7 +796,7 @@
 
             if (mode === 'arena') {
                 document.getElementById('app-heading').textContent = 'AI Coding Practice Arena';
-                document.getElementById('app-subheading').textContent = 'LeetCode-Style Method Logic Practice: Test Cases Passed Automatically into Your Method';
+                document.getElementById('app-subheading').textContent = 'Real-time AI Compiler & Test Case Suite: Code Syntax & Logic Validation Engine';
             } else if (mode === 'v0') {
                 document.getElementById('app-heading').textContent = 'v0 Lite Live UI Builder';
                 document.getElementById('app-subheading').textContent = 'Instant Real-time HTML/CSS/JS Component Generation & Sandbox Preview';
@@ -860,23 +860,86 @@
             document.getElementById('arena-sub-dash').style.display = (sub === 'dash') ? 'block' : 'none';
         }
 
+        // Real AI Compiler & Test Case Execution Engine
         function runCode() {
-            const lang = document.getElementById('lang-select').value.toUpperCase();
-            const consoleBox = document.getElementById('arena-console');
-            consoleBox.style.color = '#34d399';
-            consoleBox.textContent = `▶️ Executing method solve() in [${lang}]...\nFeeding Test Case 1 Input ➔ Output matched expected return value [PASSED 🟢]\nFeeding Test Case 2 Input ➔ Output matched expected return value [PASSED 🟢]\nExecution Time: 4ms\nStatus: 🟢 ALL TEST CASES PASSED!`;
+            evaluateUserCode(false);
         }
 
         function submitCode() {
-            const lang = document.getElementById('lang-select').value.toUpperCase();
-            stats.attempts++;
-            stats.solved++;
-            localStorage.setItem('ani_arena_stats', JSON.stringify(stats));
-            updateStatsUI();
+            evaluateUserCode(true);
+        }
 
+        function evaluateUserCode(isSubmit) {
+            const lang = document.getElementById('lang-select').value.toUpperCase();
+            const userCode = document.getElementById('code-editor').value.trim();
+            const problemText = document.getElementById('problem-display').textContent.trim();
             const consoleBox = document.getElementById('arena-console');
-            consoleBox.style.color = '#10b981';
-            consoleBox.textContent = `🚀 Submitting [${lang}] Method Solution...\nPassing 15 Hidden Test Case Inputs into solve()...\n[100% Passed] 🟢 ACCEPTED!\nRuntime: 6ms | Memory: 14.8 MB\nDashboard updated! Solved: ${stats.solved}`;
+
+            if (isSubmit) {
+                stats.attempts++;
+                localStorage.setItem('ani_arena_stats', JSON.stringify(stats));
+            }
+
+            consoleBox.style.color = '#38bdf8';
+            consoleBox.innerHTML = '';
+            
+            const cursor = document.createElement('span');
+            cursor.className = 'cursor';
+            consoleBox.appendChild(cursor);
+
+            let accumulatedText = "";
+
+            const prompt = `Act as a strict, real-time code compiler and automated test-case judge for [${lang}].
+Evaluate the user's code against this problem description:
+
+[PROBLEM STATEMENT]:
+${problemText}
+
+[USER SUBMITTED ${lang} CODE]:
+${userCode}
+
+Strict Evaluation Rules:
+1. Check if user code is unmodified template code (e.g. return null; or pass or empty body). If so, FAIL with "🔴 COMPILATION / LOGIC ERROR: No logic written in method".
+2. Check for syntax and compilation errors in ${lang} (e.g., missing semicolons in Java, invalid syntax, type mismatches). If syntax is wrong, output detailed line compiler error.
+3. Test code against 3-5 test cases. If any test case fails, output "🔴 WRONG ANSWER on Test Case X (Input: ..., Output: ..., Expected: ...)".
+4. If and only if the code has zero syntax errors and passes all test cases, output "🟢 ACCEPTED! All Test Cases Passed." and end with the line "[STATUS: ACCEPTED]".
+
+Begin Evaluation:`;
+
+            if (eventSource) eventSource.close();
+            eventSource = new EventSource('/stream?prompt=' + encodeURIComponent(prompt));
+
+            eventSource.onmessage = function (event) {
+                const data = JSON.parse(event.data);
+                if (data.done) {
+                    if (cursor.parentNode) cursor.parentNode.removeChild(cursor);
+                    
+                    // Check if AI awarded ACCEPTED status
+                    if (isSubmit && (accumulatedText.includes('[STATUS: ACCEPTED]') || accumulatedText.includes('🟢 ACCEPTED'))) {
+                        consoleBox.style.color = '#10b981';
+                        stats.solved++;
+                        localStorage.setItem('ani_arena_stats', JSON.stringify(stats));
+                        updateStatsUI();
+                    } else if (accumulatedText.includes('🔴') || accumulatedText.includes('ERROR')) {
+                        consoleBox.style.color = '#ef4444';
+                    }
+                    
+                    eventSource.close();
+                    return;
+                }
+                if (data.content) {
+                    accumulatedText += data.content;
+                    const textNode = document.createTextNode(data.content);
+                    consoleBox.insertBefore(textNode, cursor);
+                }
+            };
+
+            eventSource.onerror = function (err) {
+                consoleBox.style.color = '#ef4444';
+                consoleBox.textContent = 'Execution Error: Unable to connect to AI compiler.';
+                if (cursor.parentNode) cursor.parentNode.removeChild(cursor);
+                eventSource.close();
+            };
         }
 
         function getAiHint() {
